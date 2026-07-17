@@ -8,7 +8,7 @@ A simple API that generates and serves various sports matchup thumbnails and log
 
 - 🏀 **Multi-Sport Support**: Supports 30+ leagues including NBA, WNBA, NFL, UFL, MLB, NHL, EPL, MLS, UEFA Champions League, and 21 NCAA sports (Football, Basketball, Hockey, Soccer, Baseball, Softball, Lacrosse, Volleyball, Water Polo, and Field Hockey)
 - 🎨 **Dynamic Generation**: Creates thumbnails and logos on-the-fly with team colors and branding
-- 🖼️ **Multiple Styles**: Choose from 4 different visual styles for logos and thumbnails
+- 🖼️ **Multiple Styles**: Choose from 5 different visual styles for logos and thumbnails
 - 💾 **Smart Caching**: Automatically caches generated images and team data for 24 hours
 - 🎯 **Flexible Team Matching**: Supports team names, cities, abbreviations, and partial matches
 - 🎨 **Color Extraction**: Automatically extracts dominant colors from team logos when ESPN doesn't provide them
@@ -217,6 +217,7 @@ Generates a landscape matchup thumbnail with diagonal split layout.
   - `2` - Gradient blend between team colors
   - `3` - Minimalist badge with team circles and VS text (light background)
   - `4` - Minimalist badge with team circles and VS text (dark background)
+  - `5` - Embossed 3D vertical split with extruded tone-on-tone logo backgrounds
 - `logo` - Show league logo (default: `true`, set to `false` to hide)
 - `fallback` - Return league thumbnail if teams not found (default: `false`, set to `true` to enable)
 
@@ -227,6 +228,7 @@ GET /nhl/toronto/montreal/thumb?logo=false
 GET /nfl/chiefs/49ers/thumb?style=2
 GET /ncaaf/alabama/georgia/thumb?style=3
 GET /mlb/yankees/redsox/thumb?style=4&logo=false
+GET /nhl/stars/canucks/thumb?style=5&logo=false
 GET /nba/invalidteam/anotherteam/thumb?fallback=true
 ```
 
@@ -251,6 +253,7 @@ Generates a vertical matchup cover with horizontal split.
   - `2` - Gradient blend between team colors
   - `3` - Minimalist badge with team circles and VS text (light background)
   - `4` - Minimalist badge with team circles and VS text (dark background)
+  - `5` - Embossed 3D horizontal split with extruded tone-on-tone logo backgrounds
 - `logo` - Show league logo (default: `true`, set to `false` to hide)
 - `fallback` - Return league cover if teams not found (default: `false`, set to `true` to enable)
 
@@ -261,6 +264,7 @@ GET /nhl/toronto/montreal/cover?logo=false
 GET /nfl/chiefs/49ers/cover?style=2
 GET /mlb/yankees/redsox/cover?style=3
 GET /ncaam/duke/unc/cover?style=4&logo=false
+GET /nhl/stars/canucks/cover?style=5&logo=false
 GET /nfl/badteam/faketeam/cover?fallback=true
 ```
 

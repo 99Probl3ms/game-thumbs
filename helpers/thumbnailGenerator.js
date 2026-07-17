@@ -28,6 +28,14 @@ module.exports = {
 const COLOR_SIMILARITY_THRESHOLD = 120; // Colors closer than this need an outline
 const DIAGONAL_LINE_EXTENSION = 100; // Pixels to extend diagonal line beyond canvas
 
+// Embossed (style 5) tuning
+const EMBOSS_SCALE = 1.35; // Background logo size relative to the larger dimension of its half
+const EMBOSS_ROTATION = -8 * (Math.PI / 180); // Slight tilt of the background logo
+const EMBOSS_EXTRUDE_STEPS = 14; // Number of stacked shadow layers for the extruded depth
+const EMBOSS_FACE_SHADE = 14; // % lighter than the background for the raised face
+const EMBOSS_SHADOW_SHADE = -32; // % darker than the background for the extrusion sides
+const EMBOSS_HIGHLIGHT_SHADE = 42; // % lighter than the background for the top-left rim light
+
 // ------------------------------------------------------------------------------
 // Helper Functions
 // ------------------------------------------------------------------------------
@@ -45,6 +53,80 @@ function blendColors(color1, color2) {
     };
     
     return rgbToHex(blended);
+}
+
+// Shift a hex color toward white (positive percent) or black (negative percent)
+function shadeColor(hex, percent) {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+
+    const target = percent >= 0 ? 255 : 0;
+    const amount = Math.min(Math.abs(percent), 100) / 100;
+
+    return rgbToHex({
+        r: Math.round(rgb.r + (target - rgb.r) * amount),
+        g: Math.round(rgb.g + (target - rgb.g) * amount),
+        b: Math.round(rgb.b + (target - rgb.b) * amount)
+    });
+}
+
+// Flatten a logo into a single-color silhouette, preserving its alpha channel
+function createTintedSilhouette(logoImage, tintHex) {
+    const rgb = hexToRgb(tintHex) || { r: 0, g: 0, b: 0 };
+    const canvas = createCanvas(logoImage.width, logoImage.height);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(logoImage, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] > 0) {
+            data[i] = rgb.r;
+            data[i + 1] = rgb.g;
+            data[i + 2] = rgb.b;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    return canvas;
+}
+
+// Draw a large tone-on-tone extruded version of the logo as a background texture.
+// Layers back-to-front: stacked dark copies stepping toward the bottom-right for
+// depth, a light copy nudged up-left for a rim light, then the raised face on top.
+function drawEmbossedBackground(ctx, logoImage, region, baseColor) {
+    const { x, y, width, height } = region;
+
+    const shadowSil = createTintedSilhouette(logoImage, shadeColor(baseColor, EMBOSS_SHADOW_SHADE));
+    const highlightSil = createTintedSilhouette(logoImage, shadeColor(baseColor, EMBOSS_HIGHLIGHT_SHADE));
+    const faceSil = createTintedSilhouette(logoImage, shadeColor(baseColor, EMBOSS_FACE_SHADE));
+
+    const embossSize = Math.max(width, height) * EMBOSS_SCALE;
+    const step = embossSize * 0.0035;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+
+    ctx.fillStyle = baseColor;
+    ctx.fillRect(x, y, width, height);
+
+    ctx.translate(x + width / 2, y + height / 2);
+    ctx.rotate(EMBOSS_ROTATION);
+
+    const drawSize = embossSize;
+    const half = drawSize / 2;
+
+    for (let i = EMBOSS_EXTRUDE_STEPS; i >= 1; i--) {
+        ctx.drawImage(shadowSil, -half + i * step, -half + i * step, drawSize, drawSize);
+    }
+
+    ctx.drawImage(highlightSil, -half - step * 1.5, -half - step * 1.5, drawSize, drawSize);
+    ctx.drawImage(faceSil, -half, -half, drawSize, drawSize);
+
+    ctx.restore();
 }
 
 // ------------------------------------------------------------------------------
@@ -79,8 +161,10 @@ async function generateImage(teamA, teamB, options) {
             return generateMinimalist(teamA, teamB, width, height, league, orientation, false);
         case 4:
             return generateMinimalist(teamA, teamB, width, height, league, orientation, true);
+        case 5:
+            return generateEmbossed(teamA, teamB, width, height, league, orientation);
         default:
-            throw new Error(`Unknown style: ${style}. Valid styles are 1 (split), 2 (gradient), 3 (minimalist badge), 4 (minimalist badge dark)`);
+            throw new Error(`Unknown style: ${style}. Valid styles are 1 (split), 2 (gradient), 3 (minimalist badge), 4 (minimalist badge dark), 5 (embossed 3D)`);
     }
 }
 
@@ -280,6 +364,82 @@ async function generateGradient(teamA, teamB, width, height, league, orientation
         }
     }
     
+    return canvas.toBuffer('image/png');
+}
+
+// ------------------------------------------------------------------------------
+// Style 5: Embossed 3D (straight split with extruded logo backgrounds)
+// ------------------------------------------------------------------------------
+
+async function generateEmbossed(teamA, teamB, width, height, league, orientation) {
+    const { colorA, colorB } = adjustColors(teamA, teamB);
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+
+    // Straight vertical split for landscape, horizontal split for portrait
+    const regionA = orientation === 'landscape'
+        ? { x: 0, y: 0, width: width / 2, height }
+        : { x: 0, y: 0, width, height: height / 2 };
+    const regionB = orientation === 'landscape'
+        ? { x: width / 2, y: 0, width: width / 2, height }
+        : { x: 0, y: height / 2, width, height: height / 2 };
+
+    // Solid fallback in case a logo fails to load
+    ctx.fillStyle = colorA;
+    ctx.fillRect(regionA.x, regionA.y, regionA.width, regionA.height);
+    ctx.fillStyle = colorB;
+    ctx.fillRect(regionB.x, regionB.y, regionB.width, regionB.height);
+
+    const logoSize = orientation === 'landscape'
+        ? Math.min(width * 0.325, height * 0.52)
+        : Math.min(width * 0.5, height * 0.32);
+
+    try {
+        if (teamA.logo) {
+            const finalLogoA = await selectBestLogo(teamA, colorA);
+            const finalLogoImageA = await loadImage(await downloadImage(finalLogoA));
+
+            drawEmbossedBackground(ctx, finalLogoImageA, regionA, colorA);
+            drawLogoWithShadow(
+                ctx,
+                finalLogoImageA,
+                regionA.x + (regionA.width - logoSize) / 2,
+                regionA.y + (regionA.height - logoSize) / 2,
+                logoSize
+            );
+        }
+
+        if (teamB.logo) {
+            const finalLogoB = await selectBestLogo(teamB, colorB);
+            const finalLogoImageB = await loadImage(await downloadImage(finalLogoB));
+
+            drawEmbossedBackground(ctx, finalLogoImageB, regionB, colorB);
+            drawLogoWithShadow(
+                ctx,
+                finalLogoImageB,
+                regionB.x + (regionB.width - logoSize) / 2,
+                regionB.y + (regionB.height - logoSize) / 2,
+                logoSize
+            );
+        }
+    } catch (error) {
+        console.error('Error loading team logos:', error.message);
+    }
+
+    // Draw league logo in the center if league logo URL is provided
+    if (league && league.logoUrl) {
+        try {
+            const leagueLogoBuffer = await downloadImage(league.logoUrl);
+            const leagueLogo = await loadImage(leagueLogoBuffer);
+            const leagueLogoSize = Math.min(width, height) * 0.25;
+            const leagueLogoX = (width - leagueLogoSize) / 2;
+            const leagueLogoY = (height - leagueLogoSize) / 2;
+            drawLogoMaintainAspect(ctx, leagueLogo, leagueLogoX, leagueLogoY, leagueLogoSize);
+        } catch (error) {
+            console.error('Error loading league logo:', error.message);
+        }
+    }
+
     return canvas.toBuffer('image/png');
 }
 
