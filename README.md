@@ -33,6 +33,10 @@ GET http://localhost:3000/nfl/chiefs/49ers/logo?style=3
 GET http://localhost:3000/ncaa/football/alabama/georgia/thumb
 ```
 
+### Web UI
+
+Open `http://localhost:3000/` in a browser for an interactive URL builder — pick the league, teams, image type, and options, see a live preview, and copy the generated URL. (If `ROOT_REDIRECT_URL` is set, `/` redirects there instead.)
+
 ## Features
 
 🏀 Multi-Sport • 🎨 Dynamic Generation • 🖼️ Multiple Styles • 💾 Smart Caching • 🎯 Flexible Matching • 🔧 Customizable

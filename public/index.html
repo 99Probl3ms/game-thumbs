@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Thumbs — URL Builder</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%80%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-row">
+                <div class="app-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/>
+                        <path d="M21 15l-5-5L5 21"/>
+                    </svg>
+                </div>
+                <h1>Game Thumbs</h1>
+            </div>
+            <p class="tagline">Dynamic sports matchup thumbnails &amp; logos</p>
+        </header>
+
+        <section>
+            <h2 class="section-label">Preview</h2>
+            <div class="preview-frame" id="previewFrame">
+                <img id="previewImg" alt="Generated preview">
+                <div class="preview-status" id="previewStatus">
+                    <div class="spinner"></div>
+                    <span id="previewStatusText">Generating…</span>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-label">Image Type</h2>
+            <div class="segmented" id="typeSelector">
+                <button class="seg-btn active" data-type="thumb">Thumbnail</button>
+                <button class="seg-btn" data-type="cover">Cover</button>
+                <button class="seg-btn" data-type="logo">Logo</button>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-label">Subject</h2>
+            <div class="segmented" id="subjectSelector">
+                <button class="seg-btn active" data-subject="matchup">Matchup</button>
+                <button class="seg-btn" data-subject="team">Single Team</button>
+                <button class="seg-btn" data-subject="league">League Only</button>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-label">Matchup</h2>
+            <div class="card-list">
+                <div class="card">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">League</div>
+                            <div class="card-sub">Sport league or NCAA sport</div>
+                        </div>
+                        <select id="leagueSelect" class="select"></select>
+                    </div>
+                </div>
+                <div class="card" id="team1Card">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title" id="team1Label">Team 1</div>
+                            <div class="card-sub">Name, city, or abbreviation</div>
+                        </div>
+                        <input type="text" id="team1Input" class="text-input" value="lakers" placeholder="e.g. lakers" spellcheck="false">
+                    </div>
+                </div>
+                <div class="card" id="team2Card">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Team 2</div>
+                            <div class="card-sub">Name, city, or abbreviation</div>
+                        </div>
+                        <input type="text" id="team2Input" class="text-input" value="celtics" placeholder="e.g. celtics" spellcheck="false">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-label">Options</h2>
+            <div class="card-list">
+                <div class="card" id="styleCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Style</div>
+                            <div class="card-sub" id="styleDescription"></div>
+                        </div>
+                        <select id="styleSelect" class="select"></select>
+                    </div>
+                </div>
+                <div class="card" id="aspectCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Aspect Ratio</div>
+                            <div class="card-sub">Output dimensions</div>
+                        </div>
+                        <select id="aspectSelect" class="select"></select>
+                    </div>
+                </div>
+                <div class="card" id="logoCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">League Logo</div>
+                            <div class="card-sub">Show league logo on the image</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="logoToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card" id="styledCardCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Styled Card</div>
+                            <div class="card-sub">Generated color card instead of the raw logo</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="styledCardToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card" id="variantCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Variant</div>
+                            <div class="card-sub">Raw logo color variant</div>
+                        </div>
+                        <select id="variantSelect" class="select">
+                            <option value="light">Light (default)</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card" id="sizeCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Size</div>
+                            <div class="card-sub">Output size in pixels</div>
+                        </div>
+                        <select id="sizeSelect" class="select">
+                            <option value="default">1024 (default)</option>
+                            <option value="256">256</option>
+                            <option value="512">512</option>
+                            <option value="2048">2048</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card" id="trimCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Trim</div>
+                            <div class="card-sub">Trim transparent edges</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="trimToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card" id="useLightCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Use Light Logos</div>
+                            <div class="card-sub">Primary logos instead of dark variants</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="useLightToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card" id="badgeCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Quality Badge</div>
+                            <div class="card-sub">4K, HD, Dolby-style corner badge</div>
+                        </div>
+                        <select id="badgeSelect" class="select">
+                            <option value="">None</option>
+                            <option value="4K">4K</option>
+                            <option value="UHD">UHD</option>
+                            <option value="FHD">FHD</option>
+                            <option value="HD">HD</option>
+                            <option value="ALT">ALT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card" id="winnerCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Winner</div>
+                            <div class="card-sub">Losing team is shown in greyscale</div>
+                        </div>
+                        <input type="text" id="winnerInput" class="text-input" value="" placeholder="optional, e.g. lakers" spellcheck="false">
+                    </div>
+                </div>
+                <div class="card" id="fallbackCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">Fallback</div>
+                            <div class="card-sub">Use league logo when a team isn't found</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="fallbackToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card" id="extCard">
+                    <div class="card-row">
+                        <div class="card-text">
+                            <div class="card-title">.png Extension</div>
+                            <div class="card-sub">Append .png to the URL</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="extToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-label">Generated URL</h2>
+            <div class="url-card">
+                <code id="urlText"></code>
+                <div class="url-actions">
+                    <button id="copyBtn" class="btn btn-primary">Copy URL</button>
+                    <a id="openLink" class="btn btn-secondary" href="#" target="_blank" rel="noopener">Open</a>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Uses publicly available APIs and logos. All team names, logos, and trademarks are property of their respective owners.</p>
+        </footer>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

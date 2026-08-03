@@ -1,0 +1,413 @@
+/* ------------------------------------------------------------------------------
+   styles.css
+   Dark theme for the Game Thumbs URL builder
+   ------------------------------------------------------------------------------ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #0b0b0d;
+    --card: #17171a;
+    --card-border: #26262b;
+    --input-bg: #222226;
+    --text: #f2f2f3;
+    --muted: #85858c;
+    --green: #34c759;
+    --accent: #3b82f6;
+    --radius: 12px;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+}
+
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 20px 48px;
+}
+
+/* Header ---------------------------------------------------------------- */
+
+header {
+    margin-bottom: 28px;
+}
+
+.header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.app-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+h1 {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.tagline {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* Sections -------------------------------------------------------------- */
+
+section {
+    margin-bottom: 28px;
+}
+
+.section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+/* Preview --------------------------------------------------------------- */
+
+.preview-frame {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 12px;
+    /* subtle checkerboard so transparent PNGs are visible */
+    background-image:
+        linear-gradient(45deg, #1d1d21 25%, transparent 25%, transparent 75%, #1d1d21 75%),
+        linear-gradient(45deg, #1d1d21 25%, transparent 25%, transparent 75%, #1d1d21 75%);
+    background-size: 24px 24px;
+    background-position: 0 0, 12px 12px;
+}
+
+.preview-frame img {
+    max-width: 100%;
+    max-height: 380px;
+    border-radius: 6px;
+    display: none;
+}
+
+.preview-frame img.visible {
+    display: block;
+}
+
+.preview-status {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(11, 11, 13, 0.55);
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    padding: 16px;
+}
+
+.preview-status.visible {
+    display: flex;
+}
+
+.preview-status.error {
+    color: #ef4444;
+}
+
+.preview-status.error .spinner {
+    display: none;
+}
+
+.spinner {
+    width: 22px;
+    height: 22px;
+    border: 2.5px solid var(--card-border);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Segmented selectors ---------------------------------------------------- */
+
+.segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 6px;
+}
+
+.seg-btn {
+    flex: 1 1 auto;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+
+.seg-btn:hover {
+    color: var(--text);
+}
+
+.seg-btn.active {
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+/* Cards ------------------------------------------------------------------ */
+
+.card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+
+.card.hidden {
+    display: none;
+}
+
+.card-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.card-text {
+    min-width: 0;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.card-sub {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* Inputs ----------------------------------------------------------------- */
+
+.select,
+.text-input {
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    padding: 8px 12px;
+    outline: none;
+    max-width: 220px;
+}
+
+.select:focus,
+.text-input:focus {
+    border-color: var(--accent);
+}
+
+.text-input {
+    width: 200px;
+}
+
+.select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2385858c' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+}
+
+/* Toggle switch ---------------------------------------------------------- */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background: #3a3a3f;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    left: 2px;
+    top: 2px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.switch input:checked + .slider {
+    background: var(--green);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(20px);
+}
+
+.switch input:disabled + .slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* URL card --------------------------------------------------------------- */
+
+.url-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+.url-card code {
+    display: block;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    color: var(--green);
+    word-break: break-all;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.url-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: opacity 0.15s;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+.btn-primary {
+    background: var(--green);
+    color: #04270f;
+}
+
+.btn-primary.copied {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-secondary {
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--card-border);
+}
+
+/* Footer ----------------------------------------------------------------- */
+
+footer {
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* Responsive ------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+    .card-row {
+        flex-wrap: wrap;
+    }
+
+    .select,
+    .text-input {
+        width: 100%;
+        max-width: none;
+    }
+
+    .url-actions {
+        flex-direction: column;
+    }
+}
