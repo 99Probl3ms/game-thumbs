@@ -152,6 +152,52 @@
         .finally(update);
 
     // ------------------------------------------------------------------------------
+    // Random teams — when the league changes, pick two random teams from it
+
+    let teamsToken = 0;
+
+    async function randomizeTeams() {
+        const token = ++teamsToken;
+        team1Input.disabled = true;
+        team2Input.disabled = true;
+        team1Input.placeholder = 'Picking a random team…';
+        team2Input.placeholder = 'Picking a random team…';
+        team1Input.value = '';
+        team2Input.value = '';
+
+        try {
+            const r = await fetch('/' + encodeURIComponent(state.league) + '/teams');
+            if (token !== teamsToken) return;
+            if (!r.ok) throw new Error('teams unavailable');
+            const data = await r.json();
+            const teams = Array.isArray(data.teams) ? data.teams : [];
+            if (token !== teamsToken) return;
+            if (teams.length >= 2) {
+                const i = Math.floor(Math.random() * teams.length);
+                let j = Math.floor(Math.random() * (teams.length - 1));
+                if (j >= i) j++;
+                state.team1 = teams[i];
+                state.team2 = teams[j];
+            } else if (teams.length === 1) {
+                state.team1 = teams[0];
+                state.team2 = '';
+            }
+        } catch (e) {
+            // League has no listable teams — leave the fields for manual entry
+        } finally {
+            if (token === teamsToken) {
+                team1Input.disabled = false;
+                team2Input.disabled = false;
+                team1Input.placeholder = 'e.g. lakers';
+                team2Input.placeholder = 'e.g. celtics';
+                team1Input.value = state.team1;
+                team2Input.value = state.team2;
+                update();
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------------
     // URL building — only non-default params are included
 
     function buildPath() {
@@ -366,7 +412,11 @@
         state.subject = value;
     });
 
-    leagueSelect.addEventListener('change', () => { state.league = leagueSelect.value; update(); });
+    leagueSelect.addEventListener('change', () => {
+        state.league = leagueSelect.value;
+        update();
+        randomizeTeams();
+    });
     team1Input.addEventListener('input', () => { state.team1 = team1Input.value; update(); });
     team2Input.addEventListener('input', () => { state.team2 = team2Input.value; update(); });
     styleSelect.addEventListener('change', () => {

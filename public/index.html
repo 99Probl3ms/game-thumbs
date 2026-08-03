@@ -23,6 +23,8 @@
             <p class="tagline">Dynamic sports matchup thumbnails &amp; logos</p>
         </header>
 
+        <div class="layout">
+        <div class="preview-col">
         <section>
             <h2 class="section-label">Preview</h2>
             <div class="preview-frame" id="previewFrame">
@@ -34,6 +36,19 @@
             </div>
         </section>
 
+        <section>
+            <h2 class="section-label">Generated URL</h2>
+            <div class="url-card">
+                <code id="urlText"></code>
+                <div class="url-actions">
+                    <button id="copyBtn" class="btn btn-primary">Copy URL</button>
+                    <a id="openLink" class="btn btn-secondary" href="#" target="_blank" rel="noopener">Open</a>
+                </div>
+            </div>
+        </section>
+        </div>
+
+        <div class="controls-col">
         <section>
             <h2 class="section-label">Image Type</h2>
             <div class="segmented" id="typeSelector">
@@ -232,16 +247,8 @@
             </div>
         </section>
 
-        <section>
-            <h2 class="section-label">Generated URL</h2>
-            <div class="url-card">
-                <code id="urlText"></code>
-                <div class="url-actions">
-                    <button id="copyBtn" class="btn btn-primary">Copy URL</button>
-                    <a id="openLink" class="btn btn-secondary" href="#" target="_blank" rel="noopener">Open</a>
-                </div>
-            </div>
-        </section>
+        </div>
+        </div>
 
         <footer>
             <p>Uses publicly available APIs and logos. All team names, logos, and trademarks are property of their respective owners.</p>
